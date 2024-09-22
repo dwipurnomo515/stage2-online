@@ -1,71 +1,26 @@
 // src/components/LoginForm.tsx
 import { Box, Button, Input, Link, Stack, Text } from '@chakra-ui/react';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { Link as RouterLink } from 'react-router-dom';
 import '../../../index.css'; // Impor file CSS global
+import { useLoginForm } from '../hooks/use-login-form';
+import { useState } from 'react';
+import { LoginFormInputs } from '../schemas/login';
 
 
-const schema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 character")
-});
 
-type LoginFormInputs = z.infer<typeof schema>;
-
-interface login {
-    email: string;
-    password: string;
-}
 export function LoginForm() {
-    const [error, setError] = useState<string | null>(null);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginFormInputs>({
-        resolver: zodResolver(schema),
-    });
+    const { register, onSubmit, errors, handleSubmit } = useLoginForm();
+    const [loginError, setLoginError] = useState(''); // State untuk menyimpan pesan kesalahan
 
-    const onSubmit = (data: LoginFormInputs) => {
-        console.log(data);
-    };
+    const handleLoginSubmit = async (data: LoginFormInputs) => {
+        setLoginError(''); // Reset pesan kesalahan
+        const success = await onSubmit(data); // Panggil onSubmit
 
-    const [Login, setLogin] = useState<login>({
-        email: "",
-        password: "",
-    });
-
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        console.log(e.target.name, e.target.value);
-
-        setLogin({
-            ...Login,
-            [e.target.name]: [e.target.value],
-        });
-    }
-
-    function handelSubmit(e: React.FormEvent) {
-        e.preventDefault();
-
-        if (!email && !password) {
-            setError('Email dan Password harus diisi');
-
-        } else if (!email) {
-            setError('Email harus diisi');
-        } else if (!password) {
-            setError('Passowrd harus diisi');
-        } else {
-            navigate('/');
+        if (!success) {
+            setLoginError('Email atau password Anda salah.'); // Set pesan kesalahan jika login gagal
         }
-    }
-
+    };
 
     return (
         <Box
@@ -76,7 +31,8 @@ export function LoginForm() {
             bgColor="#1D1D1D"
             color="white"
         >
-            <form onSubmit={handelSubmit}>
+            <form onSubmit={handleSubmit(handleLoginSubmit)}>
+
                 <Stack spacing={2}>
                     <Text color={"brand.main"} fontSize="4xl" fontWeight="bold" >
                         Circle
@@ -84,27 +40,29 @@ export function LoginForm() {
                     <Text fontSize="3xl" fontWeight="bold">
                         Login to Circle
                     </Text>
+
                     <Box borderColor={'#545454'} >
-                        <Input  {...register("email")} onChange={(e) => setEmail(e.target.value)} mb={2} type="email" placeholder='Email*' name='email' />
+                        <Input  {...register("email")} mb={2} type="email" placeholder='Email*' name='email' />
                         {errors.email && (
                             <p style={{ color: "red", margin: 0 }}>{errors.email.message}</p>
                         )}
-                        <Input {...register("password")} onChange={(e) => setPassword(e.target.value)} type="password" placeholder='Password*' name='password' />
+                        <Input {...register("password")} type="password" placeholder='Password*' name='password' />
                         {errors.password && (
                             <p style={{ color: "red", margin: 0 }}>{errors.password.message}</p>
                         )}
                     </Box>
-                    {error && (
-                        <Text color="red" mt={2}>
-                            {error}
+
+                    {loginError && ( // Tampilkan pesan kesalahan di atas tombol login
+                        <Text color="red.500" textAlign="center" mt={-3}>
+                            {loginError}
                         </Text>
                     )}
-
                     <Box textAlign="end">
                         <Link as={RouterLink} to={"/forgotpassword"} fontSize="sm">
                             Forgot Password?
                         </Link>
                     </Box>
+
                     <Button
                         type='submit'
                         backgroundColor={"brand.main"}

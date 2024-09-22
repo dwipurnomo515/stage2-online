@@ -4,6 +4,7 @@ import userController from "../controller/user.controller";
 import authController from "../controller/auth.controller";
 import { authentication } from "../middlewares/authentication";
 import { authorize } from "../middlewares/authorization";
+import threadController from "../controller/thread.controller";
 
 
 
@@ -15,6 +16,12 @@ routerV1.get("/users/:id", userController.findById);
 routerV1.post("/users", userController.create);
 routerV1.patch("/users", userController.update);
 routerV1.delete("/users/:id", userController.delete);
+
+routerV1.get("/threads", threadController.find);
+routerV1.get("/threads/:id", threadController.findById);
+routerV1.post("/threads", threadController.create);
+routerV1.patch("/threads:id", threadController.update);
+routerV1.delete("/threads/:id", threadController.delete);
 
 
 routerV1.post("/auth/login", authController.login);

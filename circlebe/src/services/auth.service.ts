@@ -1,26 +1,34 @@
 import { PrismaClient, User } from "@prisma/client";
-import { loginDto, registerDto } from "../dto/auth.dto";
+import { loginDto, RegisterDTO } from "../dto/auth.dto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
 
 
 const prisma = new PrismaClient();
 
 class authService {
-    async register(data: registerDto): Promise<User | null> {
+    async register(data: RegisterDTO): Promise<Omit<User, "password"> | null> {
+        const existingUser = await prisma.user.findUnique({
+            where: { email: data.email },
+        });
+
+        if (existingUser) {
+            throw new Error("Email sudah terdaftar.");
+        }
+
         const salt = 10;
         const hashedPassword = await bcrypt.hash(data.password, salt);
 
-        return await prisma.user.create({
+        const { password, ...result } = await prisma.user.create({
             data: {
                 ...data,
                 password: hashedPassword,
             },
         });
 
-
+        return result;
     }
+
 
     async login(data: loginDto): Promise<{ user: Omit<User, "password">; token: string }> {
         const user = await prisma.user.findUnique({

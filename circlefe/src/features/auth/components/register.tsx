@@ -1,32 +1,15 @@
 // src/components/LoginForm.tsx
-import { Box, Button, Input, Link, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Input, Link, Spinner, Stack, Text } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import '../../../index.css'; // Impor file CSS global
-
-const schema = z.object({
-    fullname: z.string().min(1, "Full Name is required"),
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 character")
-});
-
-type RegisterFormInputs = z.infer<typeof schema>;
+import { useRegisterForm } from '../hooks/use-register-form';
 
 
 export function RegisterForm() {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<RegisterFormInputs>({
-        resolver: zodResolver(schema),
-    });
 
-    const onSubmit = (data: RegisterFormInputs) => {
-        console.log(data);
-    };
+    const { register, handleSubmit, errors, isSubmitting, onSubmit, backendError } = useRegisterForm();
+
+
     return (
         <Box
             width={{ base: '90%', sm: '400px' }}
@@ -45,19 +28,23 @@ export function RegisterForm() {
                 </Text>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Box borderColor={'#545454'} >
-                        <Input {...register("fullname")} mb={2} type="text" placeholder='Full Name*' name='fullname' />
-                        {errors.fullname && (
-                            <p style={{ color: "red", margin: 0 }}>{errors.fullname.message}</p>
+                        <Input {...register("fullName")} mb={2} type="text" placeholder='Full Name*' name='fullName' />
+                        {errors.fullName && (
+                            <p style={{ color: "red", margin: 0 }}>{errors.fullName.message}</p>
                         )}
                         <Input {...register("email")} mb={2} type="email" placeholder='Email*' name='email' />
                         {errors.email && (
                             <p style={{ color: "red", margin: 0 }}>{errors.email.message}</p>
+                        )}
+                        {backendError && (
+                            <Text color="red" mb={2}>{backendError}</Text>
                         )}
                         <Input {...register("password")} type="password" placeholder='Password*' name='password' />
                         {errors.password && (
                             <p style={{ color: "red", margin: 0 }}>{errors.password.message}</p>
                         )}
                     </Box>
+
 
                     <Button
                         type="submit"
@@ -73,7 +60,8 @@ export function RegisterForm() {
                         mt={2}
                         width={'full'}
                     >
-                        Register
+                        {isSubmitting ? <Spinner /> : "Register"}
+
                     </Button>
                 </form>
                 <text>Already have account? <Link as={RouterLink} to={"/login"} color={"brand.main"}>Login</Link></text>
