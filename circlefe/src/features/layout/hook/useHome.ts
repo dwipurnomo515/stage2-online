@@ -20,12 +20,17 @@ export function useHome() {
 
     async function getThreads() {
         const response = await apiV1.get<null, { data: ThreadEntity[] }>(
-            "/threads"
+            "/threads",
+            {
+                headers: {
+                    "ngrok-skip-browser-warning": "true",
+                },
+            }
         );
-        return response.data || [];
+        return response.data;
     }
 
-    const { data, isLoading, isError } = useQuery<ThreadEntity[], Error, ThreadEntity[]>({
+    const { data, isLoading } = useQuery<ThreadEntity[], Error, ThreadEntity[]>({
         queryKey: ["threads"],
         queryFn: getThreads,
     });
@@ -33,9 +38,13 @@ export function useHome() {
     const queryClient = useQueryClient();
 
     async function createThread(data: CreateThreadDTO) {
+        const formData = new FormData();
+        formData.append("content", data.content);
+        formData.append("image", data.image[0]);
+
         const response = await apiV1.post<null, { data: ThreadEntity }>(
             "/threads",
-            data
+            formData
         );
 
         queryClient.invalidateQueries({ queryKey: ["threads"] });
@@ -44,31 +53,19 @@ export function useHome() {
     }
 
     const { mutateAsync: createThreadAsync } = useMutation<
-        CreateThreadDTO,
+        ThreadEntity,
         Error,
         CreateThreadDTO
     >({
         mutationKey: ["createThread"],
         mutationFn: createThread,
-        onError: (error) => {
-            alert(`Error: ${error.message}`);
-        },
     });
 
     async function onSubmit(data: CreateThreadFormInputs) {
-        try {
-            console.log("Form submitted:", data);
-            await createThreadAsync(data);
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error("Error creating thread:", error.message);
-                alert(`Error creating thread: ${error.message}`);
-            } else {
-                console.error("An unexpected error occurred:", error);
-            }
-        }
-    }
+        await createThreadAsync(data);
 
+        alert("Thread berhasil dibuat!");
+    }
 
     return {
         register,
@@ -78,7 +75,5 @@ export function useHome() {
         onSubmit,
         data,
         isLoading,
-        isError
-
     };
 }

@@ -1,3 +1,5 @@
+const { format } = require("path");
+
 const swaggerAutogen = require("swagger-autogen")({
     openapi: "3.0.0",
     autoHeaders: false,
@@ -23,6 +25,7 @@ const doc = {
                     },
                     image: {
                         type: "string",
+                        format: "binary"
                     },
                 },
                 required: ["content", "image"],

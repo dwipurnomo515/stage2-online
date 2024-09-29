@@ -1,0 +1,31 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.routerV1 = void 0;
+const express_1 = __importDefault(require("express"));
+const user_controller_1 = __importDefault(require("../controller/user.controller"));
+const auth_controller_1 = __importDefault(require("../controller/auth.controller"));
+const authentication_1 = require("../middlewares/authentication");
+const authorization_1 = require("../middlewares/authorization");
+const thread_controller_1 = __importDefault(require("../controller/thread.controller"));
+const upload_file_1 = require("../middlewares/upload-file");
+exports.routerV1 = express_1.default.Router();
+exports.routerV1.get("/");
+exports.routerV1.get("/users", user_controller_1.default.find);
+exports.routerV1.get("/users/:id", user_controller_1.default.findById);
+exports.routerV1.post("/users", user_controller_1.default.create);
+exports.routerV1.patch("/users", user_controller_1.default.update);
+exports.routerV1.delete("/users/:id", user_controller_1.default.delete);
+exports.routerV1.get("/threads", authentication_1.authentication, thread_controller_1.default.find);
+exports.routerV1.get("/threads/:id", authentication_1.authentication, thread_controller_1.default.findById);
+exports.routerV1.post("/threads", authentication_1.authentication, upload_file_1.upload.single("image"), thread_controller_1.default.create);
+exports.routerV1.patch("/threads/:id", authentication_1.authentication, thread_controller_1.default.update);
+exports.routerV1.delete("/threads/:id", authentication_1.authentication, thread_controller_1.default.delete);
+exports.routerV1.post("/auth/login", auth_controller_1.default.login);
+exports.routerV1.post("/auth/register", auth_controller_1.default.register);
+exports.routerV1.post("/auth/check", authentication_1.authentication, auth_controller_1.default.check);
+exports.routerV1.get("/dashboard", authentication_1.authentication, (0, authorization_1.authorize)("ADMIN"), (req, res) => {
+    res.json({ message: "Hello Dashboard" });
+});

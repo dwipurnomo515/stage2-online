@@ -2,8 +2,13 @@
 import React from 'react';
 import { Box, VStack, Text, Avatar, Button, HStack } from '@chakra-ui/react';
 import profileBackground from '../../../assets/a.jpg'; // Pastikan path ini benar
+import { useAppSelector } from '@/hooks/use-store';
 
 export function Rightbar() {
+    const { fullName, email } = useAppSelector((state) => state.auth);
+    console.log("Redux state auth:", useAppSelector((state) => state.auth));
+    console.log("Full Name:", fullName);
+    console.log("Email:", email);
     return (
         <Box
             w="350px" // Lebar card
@@ -73,8 +78,8 @@ export function Rightbar() {
                     </Button>
                 </HStack>
                 <VStack align="start" spacing={1}>
-                    <Text fontSize="xl" fontWeight="bold">Dwi Purnomo</Text>
-                    <Text fontSize={'sm'} color={'#909090'}>DwiPurnomo@gmail.com</Text>
+                    <Text fontSize="xl" fontWeight="bold">{fullName}</Text>
+                    <Text fontSize={'sm'} color={'#909090'}>{email}</Text>
                     <Text fontSize="sm" color="gray.200">picked over by the worms, and weird fishes</Text>
                     <HStack spacing={3}> {/* Mengurangi jarak antara elemen */}
                         <HStack spacing={1}>

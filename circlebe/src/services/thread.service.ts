@@ -1,6 +1,7 @@
-import { PrismaClient, Thread } from "@prisma/client";
+import { PrismaClient, Thread, User } from "@prisma/client";
 import { CreateThreadDTO, UpdateThreadDTO } from "../dto/thread.dto";
 import { CustomError, CustomErrorCode } from "../types/error";
+import { error } from "console";
 
 const prisma = new PrismaClient();
 
@@ -31,11 +32,16 @@ class ThreadService {
         return thread;
     }
 
-    async createThread(data: CreateThreadDTO): Promise<Thread | null> {
+    async createThread(data: CreateThreadDTO, user: User): Promise<Thread | null> {
+
+        if (!user) {
+            throw new Error("User tidak ditemukan");
+        }
+
         return await prisma.thread.create({
             data: {
                 ...data,
-                userId: 1,
+                userId: user.id,
             },
         });
     }

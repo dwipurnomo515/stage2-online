@@ -10,7 +10,7 @@ export function HomeContent() {
             <Box w="250px" mx={0} ml={-3} my={-5}>
                 <LeftBar />
             </Box>
-            <Box flex="1" ml={12} my={-3}>
+            <Box flex="1" ml={3} my={-3}>
                 <HomeMainContent />
             </Box>
             <Box w="350px" my={-5} backgroundColor={'black'}>
