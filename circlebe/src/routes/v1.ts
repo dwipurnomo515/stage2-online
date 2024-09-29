@@ -1,10 +1,10 @@
 import express from "express";
-import userController from "../controller/user.controller";
 import authController from "../controller/auth.controller";
+import threadController from "../controller/thread.controller";
+import userController from "../controller/user.controller";
 import { authentication } from "../middlewares/authentication";
 import { authorize } from "../middlewares/authorization";
-import threadController from "../controller/thread.controller";
-import { upload, uploadDisk } from "../middlewares/upload-file";
+import { upload } from "../middlewares/upload-file";
 
 
 
@@ -22,7 +22,7 @@ routerV1.get("/threads/:id", authentication, threadController.findById);
 routerV1.post(
     "/threads",
     authentication,
-    uploadDisk.single("image"),
+    upload.single("image"),
     threadController.create
 );
 routerV1.patch("/threads/:id", authentication, threadController.update);
