@@ -1,3 +1,4 @@
+import { ArrowBackIcon } from '@chakra-ui/icons';
 import {
     Avatar,
     Box,
@@ -17,9 +18,8 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FaComment, FaHeart } from 'react-icons/fa';
-import profileBackground from '../../../assets/a.jpg'; // Pastikan path ini benar
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import profileBackground from '../../../assets/a.jpg'; // Pastikan path ini benar
 
 export const posts = [
     {
@@ -114,7 +114,7 @@ export function OtherProfilePage() {
     const mediaImages = posts
         .filter(post => post.imageUrl) // Hanya ambil yang memiliki imageUrl
         .map(post => ({ id: post.id, url: post.imageUrl })); // Tambahkan ID ke gambar
-    const [profile, setProfile] = useState<Profile>({
+    const [profile] = useState<Profile>({
         name: 'Dwi Purnomo',
         username: 'DwiPurnomo',
         bio: 'picked over by the worms, and weird fishes'

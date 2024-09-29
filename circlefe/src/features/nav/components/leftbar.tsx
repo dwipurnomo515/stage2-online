@@ -1,21 +1,20 @@
 // src/components/LeftBar.tsx
-import React from 'react';
 import {
     Box,
     Button,
+    Drawer,
+    DrawerBody,
+    DrawerCloseButton,
+    DrawerContent,
+    DrawerHeader,
+    DrawerOverlay,
+    IconButton,
     Text,
     VStack,
-    useDisclosure,
-    IconButton,
-    Drawer,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerCloseButton,
-    DrawerHeader,
-    DrawerBody,
-    useBreakpointValue
+    useBreakpointValue,
+    useDisclosure
 } from '@chakra-ui/react';
-import { FaBell, FaHome, FaSearch, FaSignOutAlt, FaUser, FaBars } from 'react-icons/fa';
+import { FaBars, FaBell, FaHome, FaSearch, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 export function LeftBar() {

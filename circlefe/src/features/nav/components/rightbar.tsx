@@ -1,8 +1,7 @@
 // src/components/Rightbar.tsx
-import React from 'react';
-import { Box, VStack, Text, Avatar, Button, HStack } from '@chakra-ui/react';
-import profileBackground from '../../../assets/a.jpg'; // Pastikan path ini benar
 import { useAppSelector } from '@/hooks/use-store';
+import { Avatar, Box, Button, HStack, Text, VStack } from '@chakra-ui/react';
+import profileBackground from '../../../assets/a.jpg'; // Pastikan path ini benar
 
 export function Rightbar() {
     const { fullName, email } = useAppSelector((state) => state.auth);
