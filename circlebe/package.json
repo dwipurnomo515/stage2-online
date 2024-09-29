@@ -7,7 +7,8 @@
     "start": "node dist/index.js",
     "dev": "nodemon",
     "build": "prisma generate && chmod +x ./node_modules/.bin/* && tsc",
-    "swagger": "node ./swagger/swagger.js"
+    "swagger": "node ./swagger/swagger.js",
+    "postinstall": "npx prisma generate"
   },
   "keywords": [],
   "author": "",
