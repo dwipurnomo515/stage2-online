@@ -22,7 +22,7 @@ routerV1.get("/threads/:id", authentication, threadController.findById);
 routerV1.post(
     "/threads",
     authentication,
-    upload.single("image"),
+    uploadDisk.single("image"),
     threadController.create
 );
 routerV1.patch("/threads/:id", authentication, threadController.update);
