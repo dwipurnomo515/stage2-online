@@ -14,7 +14,6 @@ export function authentication(
   }] */
     const authorizationHeader = req.header("Authorization");
 
-    console.log("token", authorizationHeader);
     if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
         return res.status(404).json({
             message: "Unauthorizated!",

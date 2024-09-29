@@ -39,6 +39,7 @@ class ThreadController {
 
         try {
 
+
             const user = (req as any).user;
             const image = await cloudinaryService.uploadSingle(req.file as Express.Multer.File)
             const body = {
