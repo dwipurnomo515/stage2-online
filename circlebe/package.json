@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
     "dev": "nodemon",
-    "build": "npx tsc",
+    "build": "chmod +x ./node_modules/.bin/* && tsc",
     "swagger": "node ./swagger/swagger.js"
   },
   "keywords": [],
