@@ -6,18 +6,48 @@ import { error } from "console";
 const prisma = new PrismaClient();
 
 class ThreadService {
-    async getAllThreads(): Promise<Thread[]> {
-        return await prisma.thread.findMany({
+    async getAllThreads(userId: number): Promise<Thread[]> {
+        // Ambil semua thread
+        const threads = await prisma.thread.findMany({
             include: {
-                user: true,
+                user: true, // Sertakan data user pembuat thread
             },
         });
+
+        // Loop untuk menambahkan informasi isLiked untuk setiap thread
+        const threadsWithIsLiked = await Promise.all(
+            threads.map(async (thread) => {
+                // Cek apakah user telah like thread ini
+                const isLiked = await prisma.like.findFirst({
+                    where: {
+                        userId: userId, // ID user yang sedang login
+                        threadId: thread.id,
+                    },
+                });
+
+                // Tambahkan properti isLiked ke thread
+                return {
+                    ...thread,
+                    isLiked: !!isLiked, // True jika ditemukan like, false jika tidak
+                };
+            })
+        );
+
+        return threadsWithIsLiked; // Kembalikan daftar thread dengan isLiked
     }
 
     async getThreadById(id: number): Promise<Thread | null> {
         const thread = await prisma.thread.findUnique({
             where: {
                 id: id,
+            },
+            include: {
+                user: {
+                    select: {
+                        fullName: true,
+                        email: true,
+                    },
+                },
             },
         });
 

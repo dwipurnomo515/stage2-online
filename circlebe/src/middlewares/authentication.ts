@@ -10,8 +10,8 @@ export function authentication(
     next: NextFunction
 ) {
     /* #swagger.security = [{
-          "bearerAuth": []
-  }] */
+         "bearerAuth": []
+ }] */
     const authorizationHeader = req.header("Authorization");
 
     if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {

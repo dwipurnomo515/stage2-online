@@ -10,7 +10,6 @@ class CloudinaryService {
     }
 
     async uploadSingle(file: Express.Multer.File) {
-        console.log("File:", file);
         const circle = Buffer.from(file.buffer).toString("base64");
         const dataURI = "data:" + file.mimetype + ";base64," + circle;
 

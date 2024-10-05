@@ -6,10 +6,22 @@ import cloudinaryService from "../services/cloudinary.service";
 class ThreadController {
     async find(req: Request, res: Response) {
         try {
-            const threads = await threadService.getAllThreads();
+            // Akses user yang sudah di-decode dari token melalui middleware authentication
+            const user = (req as any).user;
+            const userId = user.id;
+
+            // Panggil service dengan userId
+            const threads = await threadService.getAllThreads(userId);
+
             res.json(threads);
         } catch (error) {
-            res.status(500).json(error);
+            if (error instanceof Error) {
+                // Jika error adalah instance dari Error
+                res.status(500).json({ error: error.message });
+            } else {
+                // Jika tipe error bukan instance dari Error
+                res.status(500).json({ error: "An unknown error occurred" });
+            }
         }
     }
 

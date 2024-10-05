@@ -14,37 +14,120 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// model User {
+//   id       Int      @id @default(autoincrement())
+//   email    String   @unique
+//   fullName String?
+//   password String
+//   role     RoleEnum @default(MEMBER)
+//   threads  Thread[]
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@map("users")
+// }
+
+// model Thread {
+//   id Int @id @default(autoincrement())
+
+//   content      String
+//   image        String?
+//   likesCount   Int     @default(0)
+//   repliesCount Int     @default(0)
+//   user         User    @relation(fields: [userId], references: [id])
+//   userId       Int
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@map("threads")
+// }
+
+// enum RoleEnum {
+//   ADMIN
+//   MEMBER
+// }
+
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  fullName String?
-  password String
-  role     RoleEnum @default(MEMBER)
-  threads  Thread[]
+  id              Int      @id @default(autoincrement())
+  fullName        String
+  email           String   @unique
+  bio             String?
+  profileImage    String?
+  backgroundImage String?
+  password        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role RoleEnum @default(MEMBER)
 
-  @@map("users")
+  // Relasi untuk followers dan following
+  followers Follows[] @relation("UserFollowers")
+  following Follows[] @relation("UserFollowing")
+
+  // Relasi untuk thread
+  threads Thread[]
+
+  // Relasi untuk komentar
+  replies Reply[]
+
+  // Relasi untuk likes yang dibuat user
+  likedThreads Like[] @relation("UserLikes")
 }
 
 model Thread {
-  id Int @id @default(autoincrement())
-
+  id           Int      @id @default(autoincrement())
   content      String
-  image        String?
-  likesCount   Int     @default(0)
-  repliesCount Int     @default(0)
-  user         User    @relation(fields: [userId], references: [id])
+  image        String? // URL atau path ke gambar
+  likesCount   Int      @default(0)
+  repliesCount Int      @default(0)
   userId       Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  user    User    @relation(fields: [userId], references: [id])
+  likes   Like[]  @relation("ThreadLikes")
+  replies Reply[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  threadId  Int
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("threads")
+  user   User   @relation("UserLikes", fields: [userId], references: [id])
+  thread Thread @relation("ThreadLikes", fields: [threadId], references: [id])
+
+  @@unique([userId, threadId]) // Satu user hanya bisa like satu thread sekali
+}
+
+model Reply {
+  id        Int      @id @default(autoincrement())
+  content   String
+  image     String?
+  userId    Int
+  threadId  Int
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  thread Thread @relation(fields: [threadId], references: [id])
+}
+
+// Model untuk followers dan following
+model Follows {
+  id          Int @id @default(autoincrement())
+  followerId  Int
+  followingId Int
+
+  follower  User @relation("UserFollowers", fields: [followerId], references: [id])
+  following User @relation("UserFollowing", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId]) // Membatasi agar user tidak bisa follow orang yang sama lebih dari sekali
 }
 
 enum RoleEnum {
-  ADMIN
   MEMBER
+  ADMIN
 }

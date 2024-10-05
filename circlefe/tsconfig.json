@@ -12,6 +12,7 @@
     "target": "esnext", // or "es6"
     "module": "esnext", // or "commonjs"
     "moduleResolution": "node",
+    "jsx": "react-jsx", // Pastikan ini ada untuk mendukung file .tsx
     "types": [
       "node"
     ], // Ensure Node types are included
@@ -20,7 +21,8 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

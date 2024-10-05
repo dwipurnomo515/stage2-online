@@ -1,0 +1,41 @@
+/* src/global.css */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+    /* Mencegah overflow horizontal */
+    font-family: 'Arial', sans-serif;
+    /* Ganti sesuai kebutuhan */
+}
+
+body {
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    /* Lebar scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    /* Warna scrollbar */
+    border-radius: 10px;
+    /* Membuat scrollbar lebih bulat */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* Warna scrollbar saat hover */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    /* Warna latar belakang scrollbar */
+}
