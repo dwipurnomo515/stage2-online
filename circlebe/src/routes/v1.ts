@@ -14,9 +14,11 @@ export const routerV1 = express.Router();
 
 routerV1.get("/",);
 routerV1.get("/users", userController.find);
+routerV1.get("/getUser", authentication, userController.getUser);
+routerV1.get("/users/suggested", authentication, userController.findSuggestedUsers);
 routerV1.get("/users/:id", userController.findById);
 routerV1.post("/users", userController.create);
-routerV1.patch("/users", userController.update);
+routerV1.put('/users', authentication, upload.fields([{ name: "profileImage", maxCount: 1 }, { name: "backgroundImage", maxCount: 1 }]), userController.update);
 routerV1.delete("/users/:id", userController.delete);
 
 routerV1.get("/threads", authentication, threadController.find);
@@ -36,8 +38,8 @@ routerV1.post("/auth/check", authentication, authController.check);
 
 routerV1.post("/:userId/threads/:threadId/like", toggleLikeController);
 routerV1.get('/threads/:threadId/comments',);
-routerV1.post('/threads/:threadId/reply', authentication, upload.single('image'), ReplyController);
 
+routerV1.post('/threads/:threadId/reply', upload.fields([{ name: "profileImage", maxCount: 1 }, { name: "backgroundImage", maxCount: 1 }]), ReplyController);
 
 routerV1.get("/dashboard", authentication, authorize("ADMIN"), (req, res) => {
     res.json({ message: "Hello Dashboard" });

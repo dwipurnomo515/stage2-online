@@ -8,6 +8,7 @@ import ProfileRoute from "./profile";
 import OtherProfileRoute from "./other-profile";
 import StatusRoute from "./status";
 import SearchRoute from "./search";
+import FollowsRoute from "./follows";
 
 // import { DetailImage } from "../features/pages/components/DetailImage";
 
@@ -56,6 +57,10 @@ export function AppRouter() {
         {
             path: "/search",
             element: <SearchRoute />,
+        },
+        {
+            path: "/follows",
+            element: <FollowsRoute />,
         },
 
 

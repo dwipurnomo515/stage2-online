@@ -4,4 +4,19 @@ export type createUserDto = {
     password: string;
 }
 
-export type updateUserDto = Omit<createUserDto, "email">
+// src/types/User.ts
+export type SuggestedUser = {
+    id: number;
+    fullName: string;
+    email: string;
+    profileImage: string | null; // Tipe nullable jika bisa null
+};
+
+// src/types/updateUser.ts
+export type updateUserDto = {
+    fullName?: string;
+    userName?: string;
+    bio?: string | null;
+    profileImage?: string | null;
+    backgroundImage?: string | null;
+};

@@ -1,5 +1,9 @@
 import { Request, Response } from "express"
 import userService from "../services/user.service";
+import { updateUserDto } from "../dto/user.dto";
+import { string } from "joi";
+import cloudinaryService from "../services/cloudinary.service";
+import { updateUserSchema } from "../utils/schemas/user.schema";
 
 
 class userController {
@@ -12,6 +16,35 @@ class userController {
 
         }
     }
+
+    async getUser(req: Request, res: Response) {
+        try {
+            const userId = (req as any).user.id
+            const user = await userService.getUser(userId);
+            const following = user?._count.following;
+            const followers = user?._count.followers;
+
+            res.json({
+                ...user,
+                followers,
+                following
+            })
+        } catch (error) {
+            res.json(error);
+
+        }
+    }
+    async findSuggestedUsers(req: Request, res: Response) {
+        try {
+            const userId = parseInt((req as any).user.id);
+            const suggestedUsers = await userService.getSuggestedUsers(userId);
+            res.json(suggestedUsers);
+        } catch (error) {
+            console.error("Error fetching suggested users:", error); // Log kesalahan
+            res.status(500).json({ error: "Error fetching suggested users" });
+        }
+    }
+
 
     async findById(req: Request, res: Response) {
         try {
@@ -36,12 +69,44 @@ class userController {
 
     async update(req: Request, res: Response) {
         try {
-            const users = await userService.updateUser(req.body);
-            res.json(users);
+            console.log(req.body); // Ini harus menampilkan body yang terkirim
+            console.log(req.file); // Ini akan menampilkan file yang diupload 
+            const userId = (req as any).user.id;
+            let profileImageUrl: string | undefined;
+            let backgroundImageUrl: string | undefined;
+            const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+            if (files?.profileImage) {
+                const profileImage = await cloudinaryService.uploadSingle(files.profileImage[0]);
+                profileImageUrl = profileImage.secure_url;
+            }
+
+            if (files?.backgroundImage) {
+                const backgroundImage = await cloudinaryService.uploadSingle(files.backgroundImage[0]);
+                backgroundImageUrl = backgroundImage.secure_url;
+            }
+
+            const body = {
+                ...req.body,
+                ...(profileImageUrl && { profileImage: profileImageUrl }),
+                ...(backgroundImageUrl && { backgroundImage: backgroundImageUrl })
+            }
+            console.log('Received body:', {
+                body
+            }); // Log data yang diterima       
+
+            const value = await updateUserSchema.validateAsync(body)
+            const user = await userService.updateUser(userId, value)
+            res.json(user);
+
         } catch (error) {
-            res.json(error);
+            console.error("Error updating user:", error);
+            res.status(500).json({ message: 'Failed to update user', error });
         }
+
     }
+
+
 
     async delete(req: Request, res: Response) {
         try {

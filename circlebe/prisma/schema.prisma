@@ -52,6 +52,7 @@ datasource db {
 model User {
   id              Int      @id @default(autoincrement())
   fullName        String
+  userName        String?  @unique
   email           String   @unique
   bio             String?
   profileImage    String?

@@ -1,4 +1,4 @@
-import { UserEntity } from "../../../entities/user";
+import { UpdateUserEntity, UserEntity } from "../../../entities/user";
 
 export type LoginRequestDTO = Pick<UserEntity, "email" | "password">;
 
@@ -24,4 +24,10 @@ export type RegisterRequestDTO = Pick<
 export type UserStoreDTO = Omit<
     UserEntity,
     'password' | 'image' | 'socialConnection' | 'createdAt' | 'updatedAt'
+>;
+export type UserDTO = UpdateUserEntity;
+
+export type UpdateUserDTO = Pick<
+    UserDTO,
+    'fullName' | 'userName' | 'bio' | 'profileImage' | 'backgroundImage'
 >;

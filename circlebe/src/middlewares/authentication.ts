@@ -1,39 +1,31 @@
 import { NextFunction, Request, Response } from "express";
-import Jwt from "jsonwebtoken"
+import Jwt from "jsonwebtoken";
 
-
-
-
-export function authentication(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+export function authentication(req: Request, res: Response, next: NextFunction) {
     /* #swagger.security = [{
          "bearerAuth": []
- }] */
+     }] */
     const authorizationHeader = req.header("Authorization");
 
     if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-        return res.status(404).json({
-            message: "Unauthorizated!",
+        return res.status(401).json({
+            message: "Unauthorized!",
         });
     }
 
     const token = authorizationHeader.replace("Bearer ", "");
 
-
-    if (!token) {
-        return res.status(401).json({
-            message: "Authorization token not found"
-        });
-
-    }
     try {
         const secretKey = process.env.JWT_SECRET as string;
-        const decoded = Jwt.verify(token, secretKey);
-        (req as any).user = decoded;
-        next();
+        const decoded = Jwt.verify(token, secretKey) as Jwt.JwtPayload; // Pastikan tipe payloadnya benar
+
+        // Pastikan token memuat userId
+        if (!decoded || !decoded.id) {
+            return res.status(401).json({ message: "Invalid token: userId not found in token" });
+        }
+
+        (req as any).user = decoded; // Tambahkan decoded (misalnya id dan email) ke req.user
+        next(); // Lanjut ke handler berikutnya
     } catch (error) {
         return res.status(401).json({ message: "Invalid token" });
     }

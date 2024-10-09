@@ -89,6 +89,8 @@ export function LeftBar() {
                             transform: 'translateY(-2px)',
                             transition: 'all 0.3s ease',
                         }}
+                        onClick={() => navigate('/follows')}
+
                         color={'white'}
                     >
                         Follows

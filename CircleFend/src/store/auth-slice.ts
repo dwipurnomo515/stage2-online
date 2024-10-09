@@ -9,12 +9,14 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setUser(state, action: PayloadAction<UserStoreDTO>) {
-            const { id, fullName, email, role } = action.payload;
-            if (id && fullName && email && role) {
+            const { id, fullName, email, role, bio, userName } = action.payload;
+            if (id && fullName && email && role && bio && userName) {
                 const userData = {
                     id,
                     fullName,
+                    userName,
                     email,
+                    bio,
                     role,
                 };
                 Cookies.set("user", JSON.stringify(userData), { expires: 7 }); // Simpan ke cookies

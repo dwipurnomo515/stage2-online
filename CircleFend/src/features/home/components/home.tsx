@@ -137,7 +137,7 @@ export function Home() {
 
                         <HStack spacing={4}>
                             <Avatar size="md" name={thread.user.fullName}
-                                src={thread.user.image || ""} />
+                                src={thread.user.profileImage || ""} />
                             <VStack align="start">
                                 <HStack spacing={2}>
                                     <Text fontWeight="bold">  {thread.user.fullName}</Text>

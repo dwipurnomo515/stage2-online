@@ -28,7 +28,6 @@ export function useHome() {
             "/threads",
             {
                 headers: {
-                    "ngrok-skip-browser-warning": "true",
                     Authorization: `Bearer ${token}`,
                 },
             }
@@ -146,7 +145,6 @@ export function useHome() {
 
 
 
-
     return {
         register,
         handleSubmit,
@@ -158,5 +156,6 @@ export function useHome() {
         previewImage,
         handleImageChange,
         handleToggleLike,
+
     };
 }
