@@ -6,9 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
     "dev": "nodemon",
-    "build": "prisma generate && tsc",
+    "build": "tsc",
     "swagger": "node ./swagger/swagger.js",
-    "postinstall": "prisma generate"
+    "postinstall": "echo 'Running prisma generate...' && prisma generate"
   },
   "keywords": [],
   "author": "",
