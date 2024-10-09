@@ -26,7 +26,7 @@ export function StatusMainContent() {
     const { threadId } = useParams<{ threadId: string }>();
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState<string>('');
-    const [image, setImage] = useState<File | null>(null);
+    const [, setImage] = useState<File | null>(null);
     const [thread, setThread] = useState<ThreadEntity | null>(null);
     console.log('Comments:', comments);
 
