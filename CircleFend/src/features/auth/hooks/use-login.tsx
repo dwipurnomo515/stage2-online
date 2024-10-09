@@ -7,6 +7,7 @@ import { LoginFormInputs, loginSchema } from "../schemas/login";
 import { LoginRequestDTO, LoginResponseDTO } from "../types/dto";
 import { useAppDispatch } from "../../../hooks/use-store";
 import { setUser } from "../../../store/auth-slice";
+import { apiV1 } from "../../../libs/api";
 
 export function useLoginForm() {
     const {
@@ -23,11 +24,11 @@ export function useLoginForm() {
 
     async function onSubmit(data: LoginFormInputs) {
         try {
-            const response = await axios.post<
+            const response = await apiV1.post<
                 null,
                 { data: LoginResponseDTO },
                 LoginRequestDTO
-            >("http://localhost:5000/api/v1/auth/login", {
+            >("/auth/login", {
                 email: data.email,
                 password: data.password,
             });

@@ -8,6 +8,7 @@ import { RegisterFormInputs, registerSchema } from "../schemas/register";
 import { RegisterRequestDTO, RegisterResponseDTO } from "../types/dto";
 import { useAppDispatch } from "../../../hooks/use-store";
 import { setUser } from "../../../store/auth-slice";
+import { apiV1 } from "../../../libs/api";
 
 
 
@@ -31,8 +32,8 @@ export function useRegisterForm() {
         try {
             setBackendError(null);
 
-            const response = await axios.post<null, { data: RegisterResponseDTO }, RegisterRequestDTO>(
-                "http://localhost:5000/api/v1/auth/register",
+            const response = await apiV1.post<null, { data: RegisterResponseDTO }, RegisterRequestDTO>(
+                "/auth/register",
                 {
                     email: data.email,
                     fullName: data.fullName,
