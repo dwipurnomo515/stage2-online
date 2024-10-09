@@ -13,6 +13,8 @@ export type RegisterResponseDTO = {
     role: string;
     createdAt: Date;
     updatedAt: Date;
+    userName: string;
+    bio: string;
 };
 
 export type RegisterRequestDTO = Pick<

@@ -40,13 +40,16 @@ export function useRegisterForm() {
                 }
             );
             console.log("response", response.data);
-            const { id, email, fullName, role } = response.data;
+            const { id, email, fullName, role, userName = '', bio = '' } = response.data;
             dispatch(setUser({
                 id,
                 email,
                 fullName,
                 role,
+                userName,
+                bio
             }));
+
 
 
             navigate("/login");
