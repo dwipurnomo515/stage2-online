@@ -7,6 +7,7 @@ import { authentication } from "../middlewares/authentication";
 import { authorize } from "../middlewares/authorization";
 import { upload } from "../middlewares/upload-file";
 import { ReplyController } from "../controller/reply.controller";
+import followController from "../controller/follow.controller";
 
 
 
@@ -44,3 +45,5 @@ routerV1.post('/threads/:threadId/reply', upload.fields([{ name: "profileImage",
 routerV1.get("/dashboard", authentication, authorize("ADMIN"), (req, res) => {
     res.json({ message: "Hello Dashboard" });
 });
+
+routerV1.post('/follow/:followingId', authentication, followController.toggleFollow)

@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { apiV1 } from '../../../libs/api';
 import { useUser } from '../hooks/use-user';
 import { SuggestedUser } from '../types/suggested';
+import Follows from './follows';
 
 export function Rightbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,6 +47,30 @@ export function Rightbar() {
         fetchSuggestedUsers();
     }, []);
 
+
+
+    const handleFollow = async (followingId: number) => {
+        const followerId = data?.id;
+        if (!followerId) {
+            console.error("followerid in undefined");
+            return;
+
+        }
+
+        try {
+            const response = await apiV1.post(`/follow/${followingId}`);
+            if (response.status === 200) {
+                console.log("follow success", response.data);
+
+            } else {
+                console.error("Unexpected", response.data)
+            }
+
+        } catch (error) {
+            console.error("error following/unfollowing user", error);
+        }
+
+    }
     return (
         <Box w="350px" bg="black" boxShadow="md" borderRadius="md">
             {/* Profil Section */}
@@ -163,7 +188,7 @@ export function Rightbar() {
                                 <Text fontSize="sm" fontWeight="bold">{user.fullName}</Text>
                                 <Text fontSize="xs" color="gray.400">{user.email}</Text>
                             </VStack>
-                            <Button ml="auto" size="sm" colorScheme="white" variant="outline" borderColor="white" color="white" borderRadius="full">
+                            <Button ml="auto" size="sm" colorScheme="white" variant="outline" borderColor="white" color="white" borderRadius="full" onClick={() => handleFollow(user.id)}>
                                 Follow
                             </Button>
                         </Box>
