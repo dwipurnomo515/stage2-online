@@ -22,8 +22,7 @@ import { useEffect, useState } from 'react';
 import { apiV1 } from '../../../libs/api';
 import { useUser } from '../hooks/use-user';
 import { SuggestedUser } from '../types/suggested';
-import Follows from './follows';
-
+import FollowButton from '../button/follow';
 export function Rightbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { register, handleSubmit, errors, isSubmitting, onSubmit, data } = useUser();
@@ -34,8 +33,10 @@ export function Rightbar() {
             try {
                 const response = await apiV1.get<SuggestedUser[]>('/users/suggested');
                 if (response.status === 200) {
-                    console.log("Fetched users:", response.data);
+                    console.log("Fetched users:", response.data); // Pastikan data di sini lengkap
                     setSuggestedUsers(response.data);
+                    console.log("State after setting:", suggestedUsers); // Cek state setelah set
+
                 } else {
                     console.error("Unexpected response status:", response.status);
                 }
@@ -46,31 +47,64 @@ export function Rightbar() {
 
         fetchSuggestedUsers();
     }, []);
+    useEffect(() => {
+        console.log("Updated suggestedUsers:", suggestedUsers);
+    }, [suggestedUsers]);
 
 
 
     const handleFollow = async (followingId: number) => {
         const followerId = data?.id;
         if (!followerId) {
-            console.error("followerid in undefined");
+            console.error("followerId is undefined");
             return;
-
         }
 
         try {
             const response = await apiV1.post(`/follow/${followingId}`);
             if (response.status === 200) {
-                console.log("follow success", response.data);
-
+                setSuggestedUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === followingId
+                            ? { ...user, isFollowing: true } // Jika berhasil follow, set isFollowing menjadi true
+                            : user
+                    )
+                );
+                console.log("Follow success", response.data);
             } else {
-                console.error("Unexpected", response.data)
+                console.error("Unexpected response:", response.data);
             }
-
         } catch (error) {
-            console.error("error following/unfollowing user", error);
+            console.error("Error following/unfollowing user", error);
+        }
+    };
+
+    const handleUnfollow = async (followingId: number) => {
+        const followerId = data?.id;
+        if (!followerId) {
+            console.error("followerId is undefined");
+            return;
         }
 
-    }
+        try {
+            const response = await apiV1.delete(`/follow/${followingId}`); // Pastikan endpoint untuk unfollow ada
+            if (response.status === 200) {
+                setSuggestedUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === followingId
+                            ? { ...user, isFollowing: false } // Jika berhasil unfollow, set isFollowing menjadi false
+                            : user
+                    )
+                );
+                console.log("Unfollow success", response.data);
+            } else {
+                console.error("Unexpected response:", response.data);
+            }
+        } catch (error) {
+            console.error("Error unfollowing user", error);
+        }
+    };
+
     return (
         <Box w="350px" bg="black" boxShadow="md" borderRadius="md">
             {/* Profil Section */}
@@ -187,10 +221,12 @@ export function Rightbar() {
                             <VStack spacing={1} align="start" flex="1">
                                 <Text fontSize="sm" fontWeight="bold">{user.fullName}</Text>
                                 <Text fontSize="xs" color="gray.400">{user.email}</Text>
+
                             </VStack>
-                            <Button ml="auto" size="sm" colorScheme="white" variant="outline" borderColor="white" color="white" borderRadius="full" onClick={() => handleFollow(user.id)}>
-                                Follow
-                            </Button>
+                            <Box bg={'none'}>
+                                <FollowButton userId={user.id} />
+                            </Box>
+
                         </Box>
                     ))}
                 </VStack>

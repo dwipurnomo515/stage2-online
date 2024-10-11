@@ -24,7 +24,7 @@ class followService {
                 },
             });
 
-            return { action: 'unfollow', message: 'unfollowedSuccess' };
+            return { action: 'unfollow', message: 'unfollowedSuccess', isFollowing: false };
         } else {
             await prisma.follows.create({
                 data: {
@@ -33,7 +33,7 @@ class followService {
                 },
             });
 
-            return { action: 'follow', message: 'followsuccess' }
+            return { action: 'follow', message: 'followsuccess', isFollowing: true }
         }
     }
 
