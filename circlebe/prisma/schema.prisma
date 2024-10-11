@@ -122,6 +122,8 @@ model Follows {
   followerId  Int
   followingId Int
 
+  isFollowing Boolean @default(false)
+
   follower  User @relation("UserFollowers", fields: [followerId], references: [id])
   following User @relation("UserFollowing", fields: [followingId], references: [id])
 

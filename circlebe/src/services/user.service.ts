@@ -13,7 +13,9 @@ class userService {
         return await prisma.user.findMany();
     }
     async getSuggestedUsers(userId: number): Promise<SuggestedUser[]> {
-        return await prisma.user.findMany({
+        console.log("Memanggil getSuggestedUsers");
+
+        const users = await prisma.user.findMany({
             where: {
                 NOT: [
                     { id: userId }, // Menghindari user yang sedang login
@@ -32,7 +34,23 @@ class userService {
                 profileImage: true,
             },
         });
+
+        const followingId = await prisma.follows.findMany({
+            where: { followerId: userId },
+            select: { followingId: true },
+        });
+
+        const followingSet = new Set(followingId.map((follow) => follow.followingId));
+        const suggestedUsersWithFollowingStatus = users.map((user) => ({
+            ...user,
+            isFollowing: followingSet.has(user.id), // Cek apakah pengguna sedang mengikuti
+        }));
+        console.log("Suggested users with following status:", suggestedUsersWithFollowingStatus); // Cek hasil di sini
+
+        // Mengembalikan hasil akhir
+        return suggestedUsersWithFollowingStatus;
     }
+
 
 
 

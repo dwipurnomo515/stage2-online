@@ -8,6 +8,7 @@ import { authorize } from "../middlewares/authorization";
 import { upload } from "../middlewares/upload-file";
 import { ReplyController } from "../controller/reply.controller";
 import followController from "../controller/follow.controller";
+import follow1Controller from "../controller/follow1.controller";
 
 
 
@@ -47,3 +48,5 @@ routerV1.get("/dashboard", authentication, authorize("ADMIN"), (req, res) => {
 });
 
 routerV1.post('/follow/:followingId', authentication, followController.toggleFollow)
+routerV1.get('/follow/:userId', authentication, follow1Controller.checkFollowStatus)
+routerV1.patch('/follow/:userId', authentication, follow1Controller.toggleFollow)

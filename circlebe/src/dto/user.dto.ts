@@ -10,6 +10,8 @@ export type SuggestedUser = {
     fullName: string;
     email: string;
     profileImage: string | null; // Tipe nullable jika bisa null
+    isFollowing: boolean;
+
 };
 
 // src/types/updateUser.ts
