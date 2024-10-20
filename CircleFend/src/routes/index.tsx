@@ -47,7 +47,7 @@ export function AppRouter() {
             element: <ProfileRoute />,
         },
         {
-            path: "/otherprofile",
+            path: "/otherprofile/:id",
             element: <OtherProfileRoute />,
         },
         // {

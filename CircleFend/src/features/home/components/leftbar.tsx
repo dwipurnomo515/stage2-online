@@ -1,18 +1,51 @@
-// src/components/LeftBar.tsx
 import {
+    Avatar,
     Box,
     Button,
+    FormControl,
+    FormErrorMessage,
+    HStack,
+    IconButton,
+    Image,
+    Input,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
     Text,
+    Textarea,
+    useDisclosure,
     VStack
 } from '@chakra-ui/react';
-import { FaBell, FaHome, FaSearch, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaBell, FaHome, FaImage, FaSearch, FaSignOutAlt, FaTimes, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useThread } from '../hooks/use-thread';
+
 
 export function LeftBar() {
     const navigate = useNavigate();
+    const { isOpen, onOpen, onClose } = useDisclosure(); // Mengontrol modal
+    const {
+        register,
+        handleSubmit,
+        errors,
+        isSubmitting,
+        onSubmit,
+        handleImageChange,
+        previewImage,
+
+
+    } = useThread(onClose);
+
+
+
+
+
 
     return (
-
         <Box
             as="aside"
             width="250px"
@@ -50,7 +83,6 @@ export function LeftBar() {
                         }}
                         color={'white'}
                         onClick={() => navigate('/')}
-
                     >
                         Home
                     </Button>
@@ -90,7 +122,6 @@ export function LeftBar() {
                             transition: 'all 0.3s ease',
                         }}
                         onClick={() => navigate('/follows')}
-
                         color={'white'}
                     >
                         Follows
@@ -116,6 +147,7 @@ export function LeftBar() {
                         Profile
                     </Button>
                 </VStack>
+
                 {/* Create Post Button */}
                 <Button
                     backgroundColor="brand.main"
@@ -129,9 +161,12 @@ export function LeftBar() {
                         transform: 'translateY(-2px)',
                         transition: 'all 0.3s ease',
                     }}
+                    onClick={onOpen} // Buka modal ketika diklik
                 >
                     Create Post
                 </Button>
+
+                {/* Logout Button */}
                 <Box mt="180">
                     <Button
                         leftIcon={<FaSignOutAlt />}
@@ -148,7 +183,88 @@ export function LeftBar() {
                     </Button>
                 </Box>
             </VStack>
-        </Box>
-    )
-}
 
+            {/* Modal Create Post */}
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent bg="#1E1E1E" color="white">
+                    <ModalHeader>
+                        <HStack>
+                            <Avatar
+                                size="sm"
+                                name="User Name"
+                                src="https://storage.googleapis.com/a1aa/image/o0Gu6uXrbA44Clhm5uSnNMXAYnT7s0RYdAGiRhejQHdPDF0JA.jpg"
+                            />
+                            <IconButton
+                                aria-label="Close modal"
+                                icon={<FaTimes />}
+                                color="#888"
+                                variant="ghost"
+                                onClick={onClose}
+                                size="sm"
+                                ml="auto"
+                            />
+                        </HStack>
+                    </ModalHeader>
+
+                    <ModalBody>
+                        <form id="thread-form" onSubmit={handleSubmit(onSubmit)} encType='multipart/form-data'>
+                            <FormControl isInvalid={!!errors.content}>
+                                <Textarea
+                                    placeholder="What is happening?!"
+                                    resize="none"
+                                    bg="#1E1E1E"
+                                    border="none"
+                                    color="white"
+                                    _focus={{ boxShadow: 'none' }}
+                                    _placeholder={{ color: 'gray.500' }}
+                                    {...register("content")}
+                                />
+                                <FormErrorMessage>{errors.content?.message}</FormErrorMessage>
+                            </FormControl>
+
+                            {/* Preview Image */}
+                            {previewImage && (
+                                <Box mt={4}>
+                                    <Image src={previewImage} alt="Preview" borderRadius="md" />
+                                </Box>
+                            )}
+
+                            <ModalFooter display="flex" justifyContent="space-between">
+                                <IconButton
+                                    as={"label"}
+                                    aria-label="Upload Image"
+                                    icon={<FaImage />}
+                                    htmlFor="image-cuy"
+                                    color="#00A000"
+                                    boxSize={10}
+                                    bg={"transparent"}
+                                />
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    display="none" // Sembunyikan input file
+                                    id="image-cuy"
+                                    {...register("image")}
+                                    onChange={handleImageChange}
+                                />
+                                <Button
+                                    type="submit"
+                                    bg="#00A000"
+                                    color="white"
+                                    _hover={{ bg: "#007700" }}
+                                    borderRadius="20px"
+                                    isLoading={isSubmitting}
+                                    form="thread-form"
+
+                                >
+                                    Post
+                                </Button>
+                            </ModalFooter>
+                        </form>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        </Box>
+    );
+}

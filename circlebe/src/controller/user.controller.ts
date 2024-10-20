@@ -4,6 +4,7 @@ import { updateUserDto } from "../dto/user.dto";
 import { string } from "joi";
 import cloudinaryService from "../services/cloudinary.service";
 import { updateUserSchema } from "../utils/schemas/user.schema";
+import follow1Service from "../services/follow1.service";
 
 
 class userController {
@@ -49,9 +50,11 @@ class userController {
     async findById(req: Request, res: Response) {
         try {
             const { id } = req.params;
+            const user = (req as any).user.id;
 
             const users = await userService.getUserById(Number(id));
-            res.json(users);
+            const isFollow = await follow1Service.getFollowStatus(user, +id)
+            res.json({ ...users, isFollow });
         } catch (error) {
 
             res.json(error);
@@ -69,8 +72,6 @@ class userController {
 
     async update(req: Request, res: Response) {
         try {
-            console.log(req.body); // Ini harus menampilkan body yang terkirim
-            console.log(req.file); // Ini akan menampilkan file yang diupload 
             const userId = (req as any).user.id;
             let profileImageUrl: string | undefined;
             let backgroundImageUrl: string | undefined;
@@ -104,6 +105,19 @@ class userController {
             res.status(500).json({ message: 'Failed to update user', error });
         }
 
+    }
+
+    async searchUser(req: Request, res: Response) {
+        try {
+            const search = req.query.q as string || '';
+
+            const users = await userService.searchUser(search)
+            res.json(users)
+        } catch (error) {
+            res.status(500).json({
+                message: (error as Error).message
+            })
+        }
     }
 
 

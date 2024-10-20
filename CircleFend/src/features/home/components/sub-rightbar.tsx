@@ -1,9 +1,39 @@
 // src/components/Rightbar.tsx
 import { Avatar, Box, Button, HStack, Text, VStack } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { BsGithub } from 'react-icons/bs';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { SuggestedUser } from '../types/suggested';
+import { apiV1 } from '../../../libs/api';
+import FollowButton from '../button/follow';
 
 export function SubRightbar() {
+
+    const [suggestedUsers, setSuggestedUsers] = useState<SuggestedUser[]>([]);
+
+    useEffect(() => {
+        const fetchSuggestedUsers = async () => {
+            try {
+                const response = await apiV1.get<SuggestedUser[]>('/users/suggested');
+                if (response.status === 200) {
+                    console.log("Fetched users:", response.data); // Pastikan data di sini lengkap
+                    setSuggestedUsers(response.data);
+                    console.log("State after setting:", suggestedUsers); // Cek state setelah set
+
+                } else {
+                    console.error("Unexpected response status:", response.status);
+                }
+            } catch (error) {
+                console.error("Error fetching suggested users:", error);
+            }
+        };
+
+        fetchSuggestedUsers();
+    }, []);
+    useEffect(() => {
+        console.log("Updated suggestedUsers:", suggestedUsers);
+    }, [suggestedUsers]);
+
     return (
         <Box
             w="350px" // Lebar card
@@ -25,25 +55,18 @@ export function SubRightbar() {
                 <Text fontSize="lg" fontWeight="bold">Suggested for You</Text>
 
                 <VStack spacing={1} align="stretch">
-                    {[1, 2, 3, 4, 5].map((item) => (
-                        <Box key={item} display="flex" alignItems="center" p={2} borderRadius="md" bg="transparent">
-                            <Avatar size="sm" name={`User ${item}`} src={`https://bit.ly/dan-abramov`} mr={3} />
+                    {Array.isArray(suggestedUsers) && suggestedUsers.map((user) => (
+                        <Box key={user.id} display="flex" alignItems="center" p={2} borderRadius="md" bg="transparent">
+                            <Avatar size="sm" name={user.fullName} src={user.profileImage || ''} mr={3} />
                             <VStack spacing={1} align="start" flex="1">
-                                <Text fontSize="sm" fontWeight="bold">User {item}</Text>
-                                <Text fontSize="xs" color="gray.400">user{item}@example.com</Text>
+                                <Text fontSize="sm" fontWeight="bold">{user.fullName}</Text>
+                                <Text fontSize="xs" color="gray.400">{user.email}</Text>
+
                             </VStack>
-                            <Button
-                                ml="auto"
-                                size="sm"
-                                colorScheme="white"
-                                variant={item === 1 ? "solid" : "outline"} // "Following" untuk pengguna pertama
-                                borderColor="white"
-                                color={item === 1 ? "white" : "white.400"}
-                                borderRadius="full"
-                                _hover={{ borderColor: item === 1 ? 'white.400' : 'white', color: item === 1 ? 'white.400' : 'white' }}
-                            >
-                                {item === 1 ? "Following" : "Follow"}
-                            </Button>
+                            <Box bg={'none'}>
+                                <FollowButton userId={user.id} />
+                            </Box>
+
                         </Box>
                     ))}
                 </VStack>

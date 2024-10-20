@@ -66,6 +66,41 @@ class authController {
             res.json(error);
         }
     }
+
+    async forgotPassword(req: Request, res: Response) {
+        try {
+            const email = req.body.email
+
+            await authService.forgotPassword(email)
+            res.json({
+                message: 'Reset password link has been sent to your email'
+            })
+        } catch (error) {
+
+            const err = error as Error
+            res.status(500).json({
+                message: err.message
+            })
+        }
+    }
+
+    async resetPassword(req: Request, res: Response) {
+        try {
+            const token = req.params.token
+            const password = req.body.password
+
+            await authService.resetPassword(token, password)
+
+            res.json({
+                message: 'Password changed successfully'
+            })
+        } catch (error) {
+            const err = error as Error
+            res.status(500).json({
+                message: err.message
+            })
+        }
+    }
 }
 
 export default new authController();

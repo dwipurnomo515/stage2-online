@@ -25,7 +25,7 @@ export type RegisterRequestDTO = Pick<
 // export type RegisterResponseDTO = LoginResponseDTO;
 export type UserStoreDTO = Omit<
     UserEntity,
-    'password' | 'image' | 'socialConnection' | 'createdAt' | 'updatedAt'
+    'password' | 'image' | 'socialConnection' | 'createdAt' | 'updatedAt' | 'following' | 'followers' | 'threads'
 >;
 export type UserDTO = UpdateUserEntity;
 

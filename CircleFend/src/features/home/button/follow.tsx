@@ -12,7 +12,7 @@ interface followButtonProps {
 }
 
 const FollowButton: React.FC<followButtonProps> = ({ userId }) => {
-    const [isFollow, setIsFollow] = React.useState(false);
+    const [, setIsFollow] = React.useState(false);
     const [buttonText, setbuttonText] = useState<string>("Follow");
 
     const queryClient = useQueryClient();
@@ -27,7 +27,7 @@ const FollowButton: React.FC<followButtonProps> = ({ userId }) => {
                 });
 
                 setIsFollow(response.data.isFollowing);
-                setbuttonText(response.data.isFollowing ? "Following" : "Follow")
+                setbuttonText(response.data.isFollowing ? "Unfollow" : "Follow")
             } catch (error) {
                 console.error("Error fetching follow status:", error);
 
@@ -46,7 +46,7 @@ const FollowButton: React.FC<followButtonProps> = ({ userId }) => {
             const newFollowStatus = response.data.isFollowing;
 
             setIsFollow(newFollowStatus);
-            setbuttonText(newFollowStatus ? "Following" : "Follow");
+            setbuttonText(newFollowStatus ? "Unfollow" : "Follow");
 
             queryClient.invalidateQueries({
                 queryKey: ['user', userId],

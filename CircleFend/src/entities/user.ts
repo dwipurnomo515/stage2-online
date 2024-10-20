@@ -1,4 +1,5 @@
 import { SocialConnection } from "./social-connection";
+import { ThreadEntity } from "./thread";
 
 export interface UserEntity {
     id: number;
@@ -11,8 +12,11 @@ export interface UserEntity {
     password: string;
     socialConnection: SocialConnection;
     role: string;
+    following: number;
+    followers: number;
     createdAt: Date;
     updatedAt: Date;
+    threads: ThreadEntity[];
 
 
 }

@@ -62,6 +62,27 @@ class userService {
             where: {
                 id: id,
             },
+            include: {
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true,
+                    }
+                },
+                followers: true,
+                following: true,
+                threads: {
+                    select: {
+                        id: true,
+                        content: true,
+                        image: true,
+                        likesCount: true,
+                        repliesCount: true,
+
+                    }
+                }
+            },
+
         });
 
         if (!user) {
@@ -79,11 +100,32 @@ class userService {
             where: {
                 id: userId
             },
+
             select: {
                 id: true,
                 fullName: true,
                 userName: true,
                 bio: true,
+                threads: {
+                    select: {
+                        id: true,
+                        content: true,
+                        image: true,
+                        likesCount: true,
+                        repliesCount: true,
+                        createdAt: true,
+                        user: {
+                            select: {
+                                userName: true,
+                                email: true,
+                                profileImage: true,
+
+                            }
+                        }
+
+
+                    }
+                },
                 email: true,
                 _count: {
                     select: {
@@ -91,13 +133,47 @@ class userService {
                         following: true,
                     },
                 },
+
+                followers: {
+                    select: {
+                        follower: {
+                            select: {
+                                id: true,
+                                fullName: true,
+                                email: true,
+                                bio: true,
+                                profileImage: true,
+
+                            }
+                        }
+                    }
+                },
+                following: {
+                    select: {
+                        following: {
+                            select: {
+                                id: true,
+                                fullName: true,
+                                email: true,
+                                bio: true,
+                                profileImage: true,
+
+                            }
+                        }
+                    }
+                },
                 role: true,
                 createdAt: true,
                 updatedAt: true,
                 profileImage: true,
-                backgroundImage: true
+                backgroundImage: true,
+
             }
+
         });
+        console.log('Fetched user:', user);
+        console.log('Followers:', user?.followers);
+        console.log('Following:', user?.following);
         return user
     };
 
@@ -146,6 +222,22 @@ class userService {
         return {
             user: updatedUser,
         };
+    }
+
+
+
+    async searchUser(query: string): Promise<User[]> {
+        const user = await prisma.user.findMany({
+            where: {
+                OR: [
+                    { userName: { contains: query, mode: 'insensitive' } },
+                    { fullName: { contains: query, mode: 'insensitive' } }
+                ]
+            },
+            take: 10
+        })
+
+        return user;
     }
 
 

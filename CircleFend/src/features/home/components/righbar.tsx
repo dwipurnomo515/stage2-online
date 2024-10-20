@@ -23,6 +23,8 @@ import { apiV1 } from '../../../libs/api';
 import { useUser } from '../hooks/use-user';
 import { SuggestedUser } from '../types/suggested';
 import FollowButton from '../button/follow';
+import { ButtonLink } from '../button/link';
+
 export function Rightbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { register, handleSubmit, errors, isSubmitting, onSubmit, data } = useUser();
@@ -33,10 +35,7 @@ export function Rightbar() {
             try {
                 const response = await apiV1.get<SuggestedUser[]>('/users/suggested');
                 if (response.status === 200) {
-                    console.log("Fetched users:", response.data); // Pastikan data di sini lengkap
                     setSuggestedUsers(response.data);
-                    console.log("State after setting:", suggestedUsers); // Cek state setelah set
-
                 } else {
                     console.error("Unexpected response status:", response.status);
                 }
@@ -47,63 +46,6 @@ export function Rightbar() {
 
         fetchSuggestedUsers();
     }, []);
-    useEffect(() => {
-        console.log("Updated suggestedUsers:", suggestedUsers);
-    }, [suggestedUsers]);
-
-
-
-    const handleFollow = async (followingId: number) => {
-        const followerId = data?.id;
-        if (!followerId) {
-            console.error("followerId is undefined");
-            return;
-        }
-
-        try {
-            const response = await apiV1.post(`/follow/${followingId}`);
-            if (response.status === 200) {
-                setSuggestedUsers((prevUsers) =>
-                    prevUsers.map((user) =>
-                        user.id === followingId
-                            ? { ...user, isFollowing: true } // Jika berhasil follow, set isFollowing menjadi true
-                            : user
-                    )
-                );
-                console.log("Follow success", response.data);
-            } else {
-                console.error("Unexpected response:", response.data);
-            }
-        } catch (error) {
-            console.error("Error following/unfollowing user", error);
-        }
-    };
-
-    const handleUnfollow = async (followingId: number) => {
-        const followerId = data?.id;
-        if (!followerId) {
-            console.error("followerId is undefined");
-            return;
-        }
-
-        try {
-            const response = await apiV1.delete(`/follow/${followingId}`); // Pastikan endpoint untuk unfollow ada
-            if (response.status === 200) {
-                setSuggestedUsers((prevUsers) =>
-                    prevUsers.map((user) =>
-                        user.id === followingId
-                            ? { ...user, isFollowing: false } // Jika berhasil unfollow, set isFollowing menjadi false
-                            : user
-                    )
-                );
-                console.log("Unfollow success", response.data);
-            } else {
-                console.error("Unexpected response:", response.data);
-            }
-        } catch (error) {
-            console.error("Error unfollowing user", error);
-        }
-    };
 
     return (
         <Box w="350px" bg="black" boxShadow="md" borderRadius="md">
@@ -131,21 +73,23 @@ export function Rightbar() {
                     </Text>
                     <HStack spacing={3}>
                         <HStack spacing={1}>
-                            <Text fontSize="sm" fontWeight="bold" color="white">123</Text>
+                            <Text fontSize="sm" fontWeight="bold" color="white">{data?.following}</Text>
                             <Text fontSize="sm" color="#909090">Following</Text>
                         </HStack>
                         <HStack spacing={1}>
-                            <Text fontSize="sm" fontWeight="bold" color="white">456</Text>
+                            <Text fontSize="sm" fontWeight="bold" color="white">{data?.followers}</Text>
                             <Text fontSize="sm" color="#909090">Followers</Text>
                         </HStack>
                     </HStack>
                 </VStack>
             </Box>
+
+            {/* Modal for Editing Profile */}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent bg="#1c1c1c" color="white">
                     <ModalHeader>Edit Profile</ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton color="white" />
                     <ModalBody>
                         <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)} encType='multipart/form-data'>
                             <FormControl isInvalid={!!errors.fullName} mb={4}>
@@ -155,6 +99,9 @@ export function Rightbar() {
                                     placeholder="Full Name"
                                     defaultValue={data?.fullName}
                                     {...register('fullName')}
+                                    bg="#333"
+                                    border="none"
+                                    color="white"
                                 />
                             </FormControl>
 
@@ -165,6 +112,9 @@ export function Rightbar() {
                                     placeholder="Username"
                                     defaultValue={data?.userName}
                                     {...register('userName')}
+                                    bg="#333"
+                                    border="none"
+                                    color="white"
                                 />
                             </FormControl>
 
@@ -174,6 +124,9 @@ export function Rightbar() {
                                     placeholder="Tell us about yourself"
                                     defaultValue={data?.bio}
                                     {...register('bio')}
+                                    bg="#333"
+                                    border="none"
+                                    color="white"
                                 />
                             </FormControl>
 
@@ -183,6 +136,8 @@ export function Rightbar() {
                                     type="file"
                                     accept="image/*"
                                     {...register('profileImage')}
+                                    bg="#333"
+                                    color="white"
                                 />
                             </FormControl>
 
@@ -192,10 +147,14 @@ export function Rightbar() {
                                     type="file"
                                     accept="image/*"
                                     {...register('backgroundImage')}
+                                    bg="#333"
+                                    color="white"
                                 />
                             </FormControl>
                             <Button
-                                colorScheme="blue"
+                                bg="#00c853"
+                                color="white"
+                                fontWeight="bold"
                                 mr={3}
                                 isLoading={isSubmitting}
                                 type="submit"
@@ -205,12 +164,12 @@ export function Rightbar() {
                             </Button>
                         </form>
                     </ModalBody>
-
                     <ModalFooter>
                         <Button variant="ghost" onClick={onClose}>Cancel</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
             {/* Suggested Users Section */}
             <Box p={4} borderRadius="md" border="1px solid black" bg="#262626" color="white" mb={6}>
                 <Text fontSize="lg" fontWeight="bold">Suggested for You</Text>
@@ -219,14 +178,14 @@ export function Rightbar() {
                         <Box key={user.id} display="flex" alignItems="center" p={2} borderRadius="md" bg="transparent">
                             <Avatar size="sm" name={user.fullName} src={user.profileImage || ''} mr={3} />
                             <VStack spacing={1} align="start" flex="1">
-                                <Text fontSize="sm" fontWeight="bold">{user.fullName}</Text>
+                                <ButtonLink textDecoration={'none'} state={user.id} to={`/otherProfile/${user.id}`} bg={'none'}>
+                                    <Text fontSize="sm" fontWeight="bold">{user.fullName}</Text>
+                                </ButtonLink>
                                 <Text fontSize="xs" color="gray.400">{user.email}</Text>
-
                             </VStack>
                             <Box bg={'none'}>
                                 <FollowButton userId={user.id} />
                             </Box>
-
                         </Box>
                     ))}
                 </VStack>

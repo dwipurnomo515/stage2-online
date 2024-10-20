@@ -35,7 +35,76 @@ class followService {
                 followingId: targetUserId,
             }
         });
+
+
         return { isFollowing: follow ? true : false };
+    }
+
+    async followList(userId: number) {
+        const following = await prisma.follows.findMany({
+            where: {
+                followerId: userId,
+            },
+            include: {
+                following: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        bio: true,
+                        profileImage: true,
+                    },
+                },
+            },
+        });
+
+        const followers = await prisma.follows.findMany({
+            where: {
+                followingId: userId,
+            },
+            include: {
+                follower: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        bio: true,
+                        profileImage: true,
+                    },
+                },
+            },
+        });
+        const follows = await prisma.follows.findMany({
+            where: {
+                followerId: userId,
+            },
+        });
+        console.log(follows);
+
+        const allFollows = await prisma.follows.findMany();
+        console.log("All follows in the database:", allFollows);
+
+        const followedUser = await prisma.follows.findMany({
+            where: { followerId: userId },
+            select: { followingId: true },
+        });
+
+        const followedId = new Set(followedUser.map((follow) => follow.followingId));
+        const followersWithIsFollow = followers.map((follow) => ({
+            ...follow,
+            isFollow: followedId.has(follow.follower.id),
+        }));
+
+        const followingWithIsFollow = following.map((follow) => ({
+            ...follow,
+            isFollow: followedId.has(follow.following.id),
+        }));
+
+        return {
+            status: "success",
+            data: {
+                followers: followersWithIsFollow,
+                following: followingWithIsFollow,
+            },
+        }
     }
 }
 

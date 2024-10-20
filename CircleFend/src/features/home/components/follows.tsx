@@ -1,76 +1,122 @@
-import { Box, Tabs, TabList, TabPanels, Tab, TabPanel, Text } from '@chakra-ui/react';
+import { Box, Tabs, TabList, TabPanels, Tab, TabPanel, Text, VStack, List, ListItem, Flex, Image } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { apiV1 } from '../../../libs/api';
+import Cookies from 'js-cookie';
+import { Follower, Following } from '../types/follows';
+import FollowButton from '../button/follow';
 
 export function Follows() {
-    const followers = [
-        { id: 1, username: 'john_doe', avatarUrl: 'https://bit.ly/dan-abramov' },
-        { id: 2, username: 'jane_doe', avatarUrl: 'https://bit.ly/kent-c-dodds' },
-    ];
+    const [followers, setFollowers] = useState<Follower[]>([]);
+    const [following, setFollowing] = useState<Following[]>([]);
 
-    const follows = [
-        { id: 1, username: 'alice', avatarUrl: 'https://bit.ly/sage-adebayo' },
-        { id: 2, username: 'bob', avatarUrl: 'https://bit.ly/ryan-florence' },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await apiV1.get('/follows', {
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get("token")}`
+                    }
+                });
+
+                console.log("Full response:", response.data);
+
+                // Perhatikan bahwa kita perlu mengakses response.data.data
+                const followsData = response.data.data.followers.map((item: any) => item.follower) || [];
+                const followersData = response.data.data.following.map((item: any) => item.following) || [];
+
+                console.log("Processed Followers Data:", followersData);
+                console.log("Processed Following Data:", followsData);
+
+                setFollowers(followersData);
+                setFollowing(followsData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, []);
+
+
+
+    // Debugging logs to check fetched data
+    console.log("Fetched followers:", followers);
+    console.log("Fetched following:", following);
 
     return (
         <Box w="full" display="flex" flexDirection={'column'} color={"white"} mt={2}>
             <Tabs variant="enclosed" colorScheme="teal">
                 <TabList>
-                    {/* Tab Followers */}
-                    <Tab
-                        flex={1}
-                        _selected={{ borderBottom: '6px solid green', color: 'white' }}
-                    >
+                    <Tab flex={1} _selected={{ borderBottom: '6px solid green', color: 'white' }}>
                         Followers
                     </Tab>
-                    {/* Tab Follows */}
-                    <Tab
-                        flex={1}
-                        _selected={{ borderBottom: '6px solid green', color: 'white' }}
-                    >
+                    <Tab flex={1} _selected={{ borderBottom: '6px solid green', color: 'white' }}>
                         Follows
                     </Tab>
                 </TabList>
 
-                {/* Tab Panels */}
                 <TabPanels display={'flex'} flexDirection={'row'} mt={6}>
-                    {/* Panel Followers */}
                     <TabPanel p={0} flex="1">
                         {followers.length > 0 ? (
                             followers.map((follower) => (
                                 <Box key={follower.id} display="flex" alignItems="center" mb={4}>
                                     <img
-                                        src={follower.avatarUrl}
-                                        alt={follower.username}
+                                        src={follower.profileImage}
+                                        alt={follower.fullName}
                                         style={{ borderRadius: '50%', width: '40px', marginRight: '10px' }}
                                     />
-                                    <Text>{follower.username}</Text>
+                                    <VStack align="start" spacing={0}>
+                                        <Text fontWeight="bold">{follower.fullName}</Text>
+                                        <Text color="white">{follower.email}</Text>
+                                        <Text color="white" fontSize="sm">{follower.bio}</Text>
+                                    </VStack>
                                 </Box>
+
                             ))
                         ) : (
                             <Text>No followers available.</Text>
                         )}
                     </TabPanel>
 
-                    {/* Panel Follows */}
                     <TabPanel p={0} flex="1">
-                        {follows.length > 0 ? (
-                            follows.map((follow) => (
-                                <Box key={follow.id} display="flex" alignItems="center" mb={4}>
-                                    <img
-                                        src={follow.avatarUrl}
-                                        alt={follow.username}
-                                        style={{ borderRadius: '50%', width: '40px', marginRight: '10px' }}
-                                    />
-                                    <Text>{follow.username}</Text>
-                                </Box>
+                        {following.length > 0 ? (
+                            following.map((follow) => (
+                                < List spacing={1}>
+                                    <ListItem
+                                        key={follow.id}
+                                        p={2}
+                                        borderRadius="md"
+                                        _hover={{ bg: 'gray.900', cursor: 'pointer' }}
+                                    >
+                                        <Flex align="center" justify="space-between">
+                                            <Flex align="center">
+                                                <Image
+                                                    src={follow.profileImage}
+                                                    alt={`${follow.fullName}'s avatar`}
+                                                    borderRadius="full"
+                                                    boxSize="40px"
+                                                    mr={2}
+                                                />
+                                                <VStack align="start" spacing={0}>
+                                                    <Text fontWeight="bold">{follow.fullName}</Text>
+                                                    <Text color="white">{follow.email}</Text>
+                                                    <Text color="white" fontSize="sm">{follow.bio}</Text>
+                                                </VStack>
+                                            </Flex>
+                                            <FollowButton userId={follow.id} />
+
+                                        </Flex>
+                                    </ListItem>
+                                </List>
+
                             ))
+
                         ) : (
                             <Text>No follows available.</Text>
                         )}
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-        </Box>
+        </Box >
     );
 }
 
