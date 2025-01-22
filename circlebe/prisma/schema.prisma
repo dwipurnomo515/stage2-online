@@ -72,6 +72,9 @@ model User {
 
   // Relasi untuk komentar
   replies Reply[]
+  replylike ReplyLike[]
+
+
 
   // Relasi untuk likes yang dibuat user
   likedThreads Like[] @relation("UserLikes")
@@ -87,9 +90,19 @@ model Thread {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   likes   Like[]  @relation("ThreadLikes")
   replies Reply[]
+}
+model ReplyLike {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  replyId    Int
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  reply      Reply    @relation(fields: [replyId], references: [id])
+  @@unique([userId, replyId])
 }
 
 model Like {
@@ -98,8 +111,8 @@ model Like {
   threadId  Int
   createdAt DateTime @default(now())
 
-  user   User   @relation("UserLikes", fields: [userId], references: [id])
-  thread Thread @relation("ThreadLikes", fields: [threadId], references: [id])
+  user   User   @relation("UserLikes", fields: [userId], references: [id], onDelete: Cascade)
+  thread Thread @relation("ThreadLikes", fields: [threadId], references: [id], onDelete: Cascade)
 
   @@unique([userId, threadId]) // Satu user hanya bisa like satu thread sekali
 }
@@ -114,6 +127,7 @@ model Reply {
 
   user   User   @relation(fields: [userId], references: [id])
   thread Thread @relation(fields: [threadId], references: [id])
+  replylike ReplyLike[]
 }
 
 // Model untuk followers dan following
